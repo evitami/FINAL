@@ -6,19 +6,20 @@ Test Setup    Open Chrome On Heureka Homepage
 Test Teardown    Close Browser
 
 *** Test Cases ***
-Open Heureka page
-    [Tags]    DEBUG tag
-    click element    ${Tipy na darceky}
-    click element    ${Zena}
+Add items to cart
+#    Current page should be    ${heureka home page}
+    Click on "Dnešné tipy"    ${Tipy na darceky}
+    Click on "Pre koho je darček"    ${Zena}
+    fail
     click element    ${Vianoce}
     click element    ${Range}
     checkbox should be selected    ${Checkbox 40-100}
-    click element    ${Kategorie Kavovary a pressa}
-    sleep    3
-    Switch to tab
+    Click on element    ${Kategorie Kavovary a pressa}
+    switch window	locator=NEW
     sleep    5
+    wait until element is visible    ${kavovar1}    timeout=3s
     click element    ${kavovar1}
-    sleep    5
+    wait until element is visible    ${cart}    timeout=3s
     Add to cart
     sleep    5
     Check product was added to cart

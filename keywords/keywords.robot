@@ -4,14 +4,28 @@ Open Chrome On Heureka Homepage
     Maximize Browser Window
     Wait Until Page Contains    Heureka    5 sec
 
+#Current page should be
+
+Click on "Dnešné tipy"
+    [Arguments]     ${category_on_main_page}
+    wait until element is visible    xpath://img[@alt='${category_on_main_page}']    timeout=3s
+    click element    xpath://img[@alt='${category_on_main_page}']
+
+Click on "Pre koho je darček"
+    [Arguments]     ${Pre koho je darček}
+    wait until element is visible    xpath://div[@class='o-wrapper']//a[@data-label='${Pre koho je darček}']    timeout=3s
+    click element    xpath://div[@class='o-wrapper']//a[@data-label='${Pre koho je darček}']
+
+Click on element
+    [Arguments]     ${category_after_selection}
+    wait until element is visible    ${category_after_selection}    timeout=3s
+    click element    ${category_after_selection}
+
 Add to cart
-    click element    xpath://*[button[@data-test-id='js_cart_submit'] or //button[@class="c-top-offer__cart-button e-button e-button--highlight"]]
+    click element    ${cart}
 
 Check product was added to cart
     element should be visible    xpath://p[@class='c-notice__content' and text()='Tovar sme pridali do košíka']
-
-Switch to tab
-    switch window    Kávovary a espressá od 40 do 100 € – Heureka.sk
 
 Continue in shopping
     click element    xpath://button[@class="c-cart-confirm__button c-offscreen__close js-offscreen__toggle e-link"]
