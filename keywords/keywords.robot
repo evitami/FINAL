@@ -1,64 +1,87 @@
 *** Keywords ***
-Open Chrome On Heureka Homepage
+Open homepage Heureka.sk
     Open Browser    https://www.heureka.sk    gc
-    Maximize Browser Window
     Wait Until Page Contains    Heureka    5 sec
 
-Add to cart
-    click element    xpath://*[button[@data-test-id='js_cart_submit'] or //button[@class="c-top-offer__cart-button e-button e-button--highlight"]]
+Click on "Dnešné tipy"
+    [Arguments]     ${category_on_main_page}
+    wait until element is visible    xpath://img[@alt='${category_on_main_page}']    timeout=3s
+    click element    xpath://img[@alt='${category_on_main_page}']
 
-Check product was added to cart
-    element should be visible    xpath://p[@class='c-notice__content' and text()='Tovar sme pridali do košíka']
+Click on "Pre koho je darček"
+    [Arguments]     ${Pre koho je darček}
+    wait until element is visible    xpath://div[@class='o-wrapper']//a[@data-label='${Pre koho je darček}']    timeout=3s
+    click element    xpath://div[@class='o-wrapper']//a[@data-label='${Pre koho je darček}']
 
-Switch to tab
-    switch window    Kávovary a espressá od 40 do 100 € – Heureka.sk
+Click on category
+    [Arguments]     ${category_after_selection}
+    wait until element is visible    ${category_after_selection}    timeout=3s
+    click element    ${category_after_selection}
 
-Continue in shopping
-    click element    xpath://button[@class="c-cart-confirm__button c-offscreen__close js-offscreen__toggle e-link"]
+Select "Príležitosť"
+    [Arguments]     ${Príležitosť}
+    wait until element is visible    xpath://ul[@class='c-categories-list js-occasion-filter js-filter-list closed']//a[@data-name="${Príležitosť}"]    timeout=5s
+    click element    xpath://ul[@class='c-categories-list js-occasion-filter js-filter-list closed']//a[@data-name="${Príležitosť}"]
+
+Tick checkbox for "Cena"
+    [Arguments]     ${Range}
+    wait until element is visible    xpath://div[@class='c-form-cell c-form-cell--inline']//span[text()='${Range}']    timeout=10s
+    click element    xpath://div[@class='c-form-cell c-form-cell--inline']//span[text()='${Range}']
+
+Select item
+    [Arguments]     ${item}
+    wait until element is visible    xpath://div[@class='c-product__content']//a[text()='${item}']    timeout=5s
+    click element    xpath://div[@class='c-product__content']//a[text()='${item}']
+    wait until element is visible    ${cart}    timeout=3s
+
+Click on button "Kúpiť na Heureke"
+    wait until element is visible    xpath:(//button[text()='Kúpiť na Heureke'])[1]   timeout=10s
+    click element    xpath:(//button[text()='Kúpiť na Heureke'])[1]
+    wait until element is visible    ${cart}    timeout=5s
+
+Check confirmation that item was added to cart
+    [Arguments]     ${confirmation}
+    wait until element is visible    xpath://div[@class='c-cart-confirm']//p[text()='${confirmation}']    timeout=10s
+
+Remove popup window
+    [Arguments]     ${button}
+    wait until element is visible    ${button}    timeout=10s
+    click element    ${button}
 
 Check if price is in correct range
-    ${price}    get text    xpath:(//*[div[@class="c-product-card__price u-bold"] or //span[@class="c-product-top-offer__price u-gamma "]])[1]
+    [Arguments]     ${lowest price}    ${highest price}
+    ${price}    get text    xpath:(${item v kosiku})[1]
     log    ${price}
     ${amount}    set Variable    ${price.replace(" €", "")}
     log    ${amount}
-    Should be true    ${amount}>40
-    Should be true    ${amount}<100
-    ${price}    get text    xpath:(//*[div[@class="c-product-card__price u-bold"] or //span[@class="c-product-top-offer__price u-gamma "]])[2]
+    Should be true    ${amount}>${lowest price}
+    Should be true    ${amount}<${highest price}
+    ${price}    get text    xpath:(${item v kosiku})[2]
     log    ${price}
     ${amount}    set Variable    ${price.replace(" €", "")}
     log    ${amount}
-    Should be true    ${amount}>40
-    Should be true    ${amount}<100
-    ${price}    get text    xpath:(//*[div[@class="c-product-card__price u-bold"] or //span[@class="c-product-top-offer__price u-gamma "]])[3]
+    Should be true    ${amount}>${lowest price}
+    Should be true    ${amount}<${highest price}
+    ${price}    get text    xpath:(${item v kosiku})[3]
     log    ${price}
     ${amount}    set Variable    ${price.replace(" €", "")}
     log    ${amount}
-    Should be true    ${amount}>40
-    Should be true    ${amount}<100
+    Should be true    ${amount}>${lowest price}
+    Should be true    ${amount}<${highest price}
 
-Remove item from cart and check if it was removed
-    click element    xpath:(//a[@class="c-product-card__close c-modal__toggle js-modal__toggle e-action"])[1]
-    sleep    10s
-    click element    xpath://a[@class="e-button e-button--negative"]
-    sleep    10s
-    element should be visible    xpath://span[@data-count="2"]
+Remove item from cart
+    wait until element is visible    xpath:(${button na odstranenie itemu z kosika})[1]    timeout=5s
+    click element    xpath:(${button na odstranenie itemu z kosika})[1]
+    wait until element is visible    xpath://a[text()='Odstrániť z košíka']    timeout=5s
+    click element    xpath://a[text()='Odstrániť z košíka']
+    sleep    5s
 
-Remove all items and check cart is empty
-    click element    xpath:(//a[@class="c-product-card__close c-modal__toggle js-modal__toggle e-action"])[1]
-    sleep    10s
-    click element    xpath://a[@class="e-button e-button--negative"]
-    sleep    10s
-    click element    xpath:(//a[@class="c-product-card__close c-modal__toggle js-modal__toggle e-action"])[1]
-    sleep    10s
-    click element    xpath://a[@class="e-button e-button--negative"]
-    sleep    10s
-    element should be visible    xpath://h1[@class='e-heading u-delta' and text()='Váš košík zíva prázdnotou...']
-Go to cart
-    click element    xpath://div[@class="c-cart-confirm__buttons"]//a[@href="https://www.heureka.sk/kosik/"]
+Number of items in cart should be
+    [Arguments]    ${number of items in cart}
+    element should be visible    xpath://span[@data-count="${number of items in cart}"]
 
-Check amount of items in cart
-    click element    xpath://button[@id="onesignal-slidedown-cancel-button"]
-    element should be visible    xpath://span[@data-count="3"]
+Check cart is empty
+    [Arguments]    ${Message cart is empty}
+    wait until element is visible    xpath://h1[@class='e-heading u-delta' and text()='${Message cart is empty}']    timeout=5s
+    element should be visible    xpath://h1[@class='e-heading u-delta' and text()='${Message cart is empty}']
 
-Check item is removed
-    element should be visible    xpath://span[@data-count="2"]
